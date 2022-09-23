@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/jego8725/PR-textgo/models"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
@@ -14,6 +19,26 @@ func main() {
 		port = "3000"
 	}
 	app := fiber.New()
+
+	/*clientMgo, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017/pr-testgo"))
+
+	if err != nil {
+		panic(err)
+	}
+
+	collUser := clientMgo.Database("pr-testgo").Collection("users")
+
+	_, errIns := collUser.InsertOne(context.TODO(), bson.D{
+		{Key: "name", Value: "Jeison"},
+		{Key: "lastName", Value: "Gaviria"},
+		{Key: "documentation", Value: "11236765454"},
+		{Key: "email", Value: "jeison8725@gmail.com"},
+		{Key: "phone", Value: "3124565654"},
+	})
+
+	if errIns != nil {
+		panic(errIns)
+	}*/
 	app.Use(cors.New())
 
 	app.Static("/", "./client/dist")
@@ -21,6 +46,34 @@ func main() {
 	app.Get("/users", func(c *fiber.Ctx) error {
 		return c.JSON(&fiber.Map{
 			"data": "usuarios desde el backend",
+		})
+	})
+
+	app.Post("/users", func(c *fiber.Ctx) error {
+		var user models.User
+		c.BodyParser(&user)
+
+		clientMgo, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017/pr-testgo"))
+		if err != nil {
+			panic(err)
+		}
+
+		collUser := clientMgo.Database("pr-testgo").Collection("users")
+
+		_, errIns := collUser.InsertOne(context.TODO(), bson.D{
+			{Key: "name", Value: user.Name},
+			{Key: "lastName", Value: user.LastName},
+			{Key: "documentation", Value: user.Documentation},
+			{Key: "email", Value: user.Email},
+			{Key: "phone", Value: user.Phone},
+		})
+
+		if errIns != nil {
+			panic(errIns)
+		}
+
+		return c.JSON(&fiber.Map{
+			"data": "creando usuario",
 		})
 	})
 
