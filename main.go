@@ -19,26 +19,6 @@ func main() {
 		port = "3000"
 	}
 	app := fiber.New()
-
-	/*clientMgo, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017/pr-testgo"))
-
-	if err != nil {
-		panic(err)
-	}
-
-	collUser := clientMgo.Database("pr-testgo").Collection("users")
-
-	_, errIns := collUser.InsertOne(context.TODO(), bson.D{
-		{Key: "name", Value: "Jeison"},
-		{Key: "lastName", Value: "Gaviria"},
-		{Key: "documentation", Value: "11236765454"},
-		{Key: "email", Value: "jeison8725@gmail.com"},
-		{Key: "phone", Value: "3124565654"},
-	})
-
-	if errIns != nil {
-		panic(errIns)
-	}*/
 	app.Use(cors.New())
 
 	app.Static("/", "./client/dist")
